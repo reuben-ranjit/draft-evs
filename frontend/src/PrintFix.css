@@ -1,0 +1,88 @@
+/* Print layout corrections: keep the report flowing naturally across pages. */
+@media print {
+  .detailed-report,
+  .report-block,
+  .assessment-charts,
+  .chart-section,
+  .soil-chart,
+  .decision-visual {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  /* Never move an entire multi-card grid just because it cannot fit at the
+     bottom of the current page. Individual cards can remain intact. */
+  .report-grid,
+  .resource-chart-grid,
+  .report-two-column {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .report-factor,
+  .resource-chart-card,
+  .soil-chart,
+  .decision-visual,
+  .report-callout,
+  .site-summary {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Keep section headings with the content immediately below them. */
+  .report-block > .section-label,
+  .report-block > h3,
+  .chart-section-heading,
+  .soil-heading,
+  .integrated-heading {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* Site parameters must be one finished block rather than a heading stranded
+     at the bottom of one page and its values on the next. */
+  .site-summary {
+    display: block !important;
+    margin-top: 24px !important;
+    padding: 18px 0 !important;
+    border: 1px solid #d8e0da !important;
+    border-radius: 14px !important;
+    background: #ffffff !important;
+  }
+
+  .site-summary > .section-label {
+    padding: 0 18px !important;
+    margin: 0 0 14px !important;
+  }
+
+  .site-summary-grid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Reduce the oversized vertical gaps introduced by the screen layout. */
+  .assessment-charts {
+    margin-top: 26px !important;
+  }
+
+  .chart-section-heading,
+  .soil-heading,
+  .integrated-heading {
+    margin-top: 24px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .resource-chart-card,
+  .soil-chart,
+  .decision-visual {
+    box-shadow: none !important;
+  }
+
+  /* Avoid tiny orphaned text fragments at page boundaries. */
+  .report-factor p,
+  .report-bullets li,
+  .chart-footnote {
+    orphans: 3;
+    widows: 3;
+  }
+}
