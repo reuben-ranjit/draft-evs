@@ -80,25 +80,6 @@ export default function AssessmentCharts({ result }) {
         <div className="soil-thresholds"><span>0</span><span>5</span><span>10</span><span>20</span><span>30+</span></div>
         <div className="soil-value-row"><strong>{soilValue.toFixed(3)}</strong><span>t/ha/yr estimated annual soil loss</span></div>
       </div>
-
-      <div className="chart-section-heading integrated-heading">
-        <div>
-          <p className="section-label">INTEGRATED ASSESSMENT</p>
-          <h3>How the factors combine</h3>
-        </div>
-        <span>DECISION BALANCE</span>
-      </div>
-
-      <div className="decision-visual">
-        <div className="decision-factor"><span>Solar</span><strong>{solar.class}</strong></div>
-        <div className="decision-connector" />
-        <div className="decision-factor"><span>Wind</span><strong>{wind.class}</strong></div>
-        <div className="decision-connector" />
-        <div className="decision-factor"><span>Soil</span><strong>{soil.risk} risk</strong></div>
-        <div className="decision-arrow">→</div>
-        <div className="decision-result"><span>Overall decision</span><strong>{result.final_decision}</strong></div>
-      </div>
-      <p className="chart-footnote">The overall recommendation reflects the combined renewable-resource opportunity and environmental constraint; it is not a fabricated numerical score.</p>
     </div>
   );
 }
