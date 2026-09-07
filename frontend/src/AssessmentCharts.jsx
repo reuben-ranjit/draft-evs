@@ -1,23 +1,15 @@
-function clampPercent(value, max) {
-  if (!Number.isFinite(Number(value)) || max <= 0) return 0;
-  return Math.max(0, Math.min(100, (Number(value) / max) * 100));
-}
+function MetricBar({ label, value, max, unit }) {
+  const numericValue = Number(value) || 0;
+  const width = Math.max(0, Math.min(100, (numericValue / max) * 100));
 
-function classPosition(value, order) {
-  const index = order.indexOf(value);
-  if (index === -1) return 0;
-  return ((index + 1) / order.length) * 100;
-}
-
-function MetricBar({ label, value, unit, percent }) {
   return (
-    <div className="chart-metric">
-      <div className="chart-metric-head">
+    <div className="metric-chart">
+      <div className="metric-chart-head">
         <span>{label}</span>
-        <strong>{value} {unit}</strong>
+        <strong>{numericValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} {unit}</strong>
       </div>
-      <div className="chart-track">
-        <div className="chart-fill" style={{ width: `${percent}%` }} />
+      <div className="metric-track">
+        <div className="metric-fill" style={{ width: `${width}%` }} />
       </div>
     </div>
   );
@@ -29,96 +21,84 @@ export default function AssessmentCharts({ result }) {
   const solar = result.energy.solar;
   const wind = result.energy.wind;
   const soil = result.soil;
-
-  const solarMax = Math.max(Number(solar.ghi_max) || 0, Number(solar.ghi_avg) || 0, 1);
-  const windMax = Math.max(Number(wind.wind_max) || 0, Number(wind.wind_avg) || 0, 1);
-
-  const soilRiskOrder = ["Very High", "High", "Moderate", "Low"];
-  const soilPosition = classPosition(soil.risk, soilRiskOrder);
+  const soilValue = Number(soil.soil_loss) || 0;
+  const soilPosition = Math.max(0, Math.min(100, (soilValue / 30) * 100));
 
   return (
     <div className="assessment-charts">
-      <div className="report-block chart-section">
-        <div className="chart-heading">
-          <div>
-            <p className="section-label">RESOURCE PROFILE</p>
-            <h3>Renewable resource indicators</h3>
-          </div>
-          <span className="chart-note">Average vs peak</span>
+      <div className="chart-section-heading">
+        <div>
+          <p className="section-label">RESOURCE PROFILE</p>
+          <h3>Renewable resource indicators</h3>
         </div>
-
-        <div className="resource-chart-grid">
-          <div className="resource-chart-card">
-            <div className="resource-chart-title">
-              <span>Solar</span>
-              <strong>{solar.class}</strong>
-            </div>
-            <MetricBar
-              label="Average GHI"
-              value={solar.ghi_avg}
-              unit="W/m²"
-              percent={clampPercent(solar.ghi_avg, solarMax)}
-            />
-            <MetricBar
-              label="Peak GHI"
-              value={solar.ghi_max}
-              unit="W/m²"
-              percent={clampPercent(solar.ghi_max, solarMax)}
-            />
-          </div>
-
-          <div className="resource-chart-card">
-            <div className="resource-chart-title">
-              <span>Wind</span>
-              <strong>{wind.class}</strong>
-            </div>
-            <MetricBar
-              label="Average speed"
-              value={wind.wind_avg}
-              unit="m/s"
-              percent={clampPercent(wind.wind_avg, windMax)}
-            />
-            <MetricBar
-              label="Peak speed"
-              value={wind.wind_max}
-              unit="m/s"
-              percent={clampPercent(wind.wind_max, windMax)}
-            />
-          </div>
-        </div>
-
-        <p className="chart-footnote">
-          Bars compare the average and peak values within each resource. Solar and wind use separate scales because their measurement units differ.
-        </p>
+        <span>AVERAGE VS PEAK</span>
       </div>
 
-      <div className="report-block chart-section">
-        <div className="chart-heading">
-          <div>
-            <p className="section-label">ENVIRONMENTAL CONSTRAINT</p>
-            <h3>Soil erosion risk position</h3>
+      <div className="resource-chart-grid">
+        <div className="resource-chart-card">
+          <div className="resource-chart-header">
+            <div><span className="chart-index">01</span><h4>Solar</h4></div>
+            <span className="chart-class">{solar.class}</span>
           </div>
-          <span className="chart-note">Lower risk is preferable</span>
+          <MetricBar label="Average GHI" value={solar.ghi_avg} max={800} unit="W/m²" />
+          <MetricBar label="Peak GHI" value={solar.ghi_max} max={1200} unit="W/m²" />
         </div>
 
-        <div className="risk-chart">
-          <div className="risk-scale">
-            <span>Very high</span>
-            <span>High</span>
-            <span>Moderate</span>
-            <span>Low</span>
+        <div className="resource-chart-card">
+          <div className="resource-chart-header">
+            <div><span className="chart-index">02</span><h4>Wind</h4></div>
+            <span className="chart-class">{wind.class}</span>
           </div>
-          <div className="risk-track">
-            <div className="risk-marker" style={{ left: `${soilPosition}%` }}>
-              <span>{soil.risk}</span>
-            </div>
-          </div>
-          <div className="risk-value">
-            <strong>{soil.soil_loss}</strong>
-            <span>t/ha/yr estimated annual soil loss</span>
-          </div>
+          <MetricBar label="Average speed" value={wind.wind_avg} max={16} unit="m/s" />
+          <MetricBar label="Peak speed" value={wind.wind_max} max={25} unit="m/s" />
         </div>
       </div>
+
+      <p className="chart-footnote">Each resource uses its own physical scale. The bars show where the site's measured indicator sits within a practical screening range.</p>
+
+      <div className="chart-section-heading soil-heading">
+        <div>
+          <p className="section-label">ENVIRONMENTAL CONSTRAINT</p>
+          <h3>Soil erosion risk position</h3>
+        </div>
+        <span>LOWER RISK IS PREFERABLE</span>
+      </div>
+
+      <div className="soil-chart">
+        <div className="soil-label-row">
+          <span>LOW</span><span>MODERATE</span><span>HIGH</span><span>VERY HIGH</span>
+        </div>
+        <div className="soil-track">
+          <div className="soil-band soil-low" />
+          <div className="soil-band soil-moderate" />
+          <div className="soil-band soil-high" />
+          <div className="soil-band soil-very-high" />
+          <div className="soil-marker" style={{ left: `${soilPosition}%` }}>
+            <span>{soil.risk}</span><i />
+          </div>
+        </div>
+        <div className="soil-thresholds"><span>0</span><span>5</span><span>10</span><span>20</span><span>30+</span></div>
+        <div className="soil-value-row"><strong>{soilValue.toFixed(3)}</strong><span>t/ha/yr estimated annual soil loss</span></div>
+      </div>
+
+      <div className="chart-section-heading integrated-heading">
+        <div>
+          <p className="section-label">INTEGRATED ASSESSMENT</p>
+          <h3>How the factors combine</h3>
+        </div>
+        <span>DECISION BALANCE</span>
+      </div>
+
+      <div className="decision-visual">
+        <div className="decision-factor"><span>Solar</span><strong>{solar.class}</strong></div>
+        <div className="decision-connector" />
+        <div className="decision-factor"><span>Wind</span><strong>{wind.class}</strong></div>
+        <div className="decision-connector" />
+        <div className="decision-factor"><span>Soil</span><strong>{soil.risk} risk</strong></div>
+        <div className="decision-arrow">→</div>
+        <div className="decision-result"><span>Overall decision</span><strong>{result.final_decision}</strong></div>
+      </div>
+      <p className="chart-footnote">The overall recommendation reflects the combined renewable-resource opportunity and environmental constraint; it is not a fabricated numerical score.</p>
     </div>
   );
 }
