@@ -92,6 +92,17 @@ export default function AssessmentCharts({ result }) {
         </div>
         <div className="soil-value-row"><strong>{soilValue.toFixed(3)}</strong><span>t/ha/yr estimated annual soil loss</span></div>
       </div>
+
+      <style>{`
+        .detailed-report > .report-block:nth-child(6),
+        .detailed-report > .report-two-column {
+          display: none !important;
+        }
+
+        .detailed-report .report-sub-label + .report-bullets li:nth-child(3) {
+          text-transform: uppercase;
+        }
+      `}</style>
     </div>
   );
 }
