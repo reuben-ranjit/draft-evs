@@ -22,7 +22,7 @@ class SiteRequest(BaseModel):
     latitude: float
     longitude: float
     site_area_km2: float
-    installation_type: str = "hybrid"
+    
 
 
 @app.get("/")
@@ -39,7 +39,7 @@ def evaluate(request: SiteRequest):
         request.latitude,
         request.longitude,
         request.site_area_km2,
-        request.installation_type
+        
     )
 
     return result
