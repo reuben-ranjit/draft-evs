@@ -77,7 +77,7 @@ export default function AssessmentCharts({ result }) {
           <div className="soil-band soil-high" />
           <div className="soil-band soil-very-high" />
           <div className="soil-marker" style={{ left: `${soilPosition}%` }}>
-            <span>{soil.risk}</span><i />
+            <span>{String(soil.risk || "").toUpperCase()}</span><i />
           </div>
         </div>
         <div
