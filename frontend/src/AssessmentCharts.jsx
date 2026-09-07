@@ -65,7 +65,10 @@ export default function AssessmentCharts({ result }) {
       </div>
 
       <div className="soil-chart">
-        <div className="soil-label-row">
+        <div
+          className="soil-label-row"
+          style={{ gridTemplateColumns: "16.6667% 16.6667% 33.3333% 33.3333%" }}
+        >
           <span>LOW</span><span>MODERATE</span><span>HIGH</span><span>VERY HIGH</span>
         </div>
         <div className="soil-track">
@@ -77,7 +80,16 @@ export default function AssessmentCharts({ result }) {
             <span>{soil.risk}</span><i />
           </div>
         </div>
-        <div className="soil-thresholds"><span>0</span><span>5</span><span>10</span><span>20</span><span>30+</span></div>
+        <div
+          className="soil-thresholds"
+          style={{ position: "relative", display: "block", height: "12px", marginTop: "12px" }}
+        >
+          <span style={{ position: "absolute", left: "0%", transform: "translateX(0)" }}>0</span>
+          <span style={{ position: "absolute", left: "16.6667%", transform: "translateX(-50%)" }}>5</span>
+          <span style={{ position: "absolute", left: "33.3333%", transform: "translateX(-50%)" }}>10</span>
+          <span style={{ position: "absolute", left: "66.6667%", transform: "translateX(-50%)" }}>20</span>
+          <span style={{ position: "absolute", left: "100%", transform: "translateX(-100%)" }}>30+</span>
+        </div>
         <div className="soil-value-row"><strong>{soilValue.toFixed(3)}</strong><span>t/ha/yr estimated annual soil loss</span></div>
       </div>
     </div>
