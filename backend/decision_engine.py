@@ -179,8 +179,8 @@ def evaluate_site(latitude, longitude, site_area):
         final_decision = "CONDITIONALLY SUITABLE"
         action = "FURTHER TECHNICAL STUDY"
         message = (
-            "Both renewable-energy resources and soil conditions present moderate conditions. "
-            "A detailed technical assessment is recommended before development."
+            "The site combines usable renewable-energy resources with moderate soil erosion risk. "
+            "Solar is moderate and wind is excellent in this case; a detailed technical assessment is recommended before development."
         )
     elif solar_acceptable and wind_acceptable and soil_risk in ["High", "Very High"]:
         final_decision = "NOT RECOMMENDED"
@@ -230,11 +230,7 @@ def evaluate_site(latitude, longitude, site_area):
                 "average_value": solar["ghi_avg"],
                 "peak_value": solar["ghi_max"],
                 "unit": "W/m²",
-                "interpretation": _solar_interpretation(
-                    solar["ghi_avg"],
-                    solar["ghi_max"],
-                    solar_class,
-                ),
+                "interpretation": _solar_interpretation(solar["ghi_avg"], solar["ghi_max"], solar_class),
             },
             "wind": {
                 "classification": wind_class,
@@ -242,20 +238,13 @@ def evaluate_site(latitude, longitude, site_area):
                 "average_value": wind["wind_avg"],
                 "peak_value": wind["wind_max"],
                 "unit": "m/s",
-                "interpretation": _wind_interpretation(
-                    wind["wind_avg"],
-                    wind["wind_max"],
-                    wind_class,
-                ),
+                "interpretation": _wind_interpretation(wind["wind_avg"], wind["wind_max"], wind_class),
             },
             "soil": {
                 "classification": soil_risk,
                 "average_value": soil["soil_loss"],
                 "unit": "t/ha/yr",
-                "interpretation": _soil_interpretation(
-                    soil["soil_loss"],
-                    soil_risk,
-                ),
+                "interpretation": _soil_interpretation(soil["soil_loss"], soil_risk),
             },
             "temperature": {
                 "average_value": temperature["avg"],
@@ -273,11 +262,7 @@ def evaluate_site(latitude, longitude, site_area):
                 f"Wind: {wind_class}",
                 f"Soil erosion: {soil_risk}",
             ],
-            "development_considerations": _development_considerations(
-                solar_class,
-                wind_class,
-                soil_risk,
-            ),
+            "development_considerations": _development_considerations(solar_class, wind_class, soil_risk),
         },
         "methodology": [
             "Solar, wind and temperature indicators are obtained from the current energy screening workflow.",
@@ -293,17 +278,10 @@ def evaluate_site(latitude, longitude, site_area):
     }
 
     return {
-        "location": {
-            "latitude": latitude,
-            "longitude": longitude,
-            "site_area_km2": site_area,
-        },
+        "location": {"latitude": latitude, "longitude": longitude, "site_area_km2": site_area},
         "energy": energy,
         "soil": soil,
         "final_decision": final_decision,
-        "recommendation": {
-            "action": action,
-            "message": message,
-        },
+        "recommendation": {"action": action, "message": message},
         "report": report,
     }
