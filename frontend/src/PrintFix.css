@@ -1,20 +1,78 @@
-/* Print layout corrections: keep the report flowing naturally across pages. */
+/* Print/PDF rendering: preserve the report's visual system and keep sections intact. */
+@page {
+  size: A4;
+  margin: 14mm 12mm;
+}
+
 @media print {
+  /* Browsers otherwise commonly remove translucent backgrounds and gradient bars
+     when printing/saving to PDF. */
+  html,
+  body,
+  #root,
+  .app,
+  .container,
+  .results,
   .detailed-report,
   .report-block,
   .assessment-charts,
-  .chart-section,
+  .resource-chart-card,
   .soil-chart,
-  .decision-visual {
-    break-inside: auto !important;
-    page-break-inside: auto !important;
+  .decision-visual,
+  .report-factor,
+  .report-callout,
+  .site-summary {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* Never move an entire multi-card grid just because it cannot fit at the
-     bottom of the current page. Individual cards can remain intact. */
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  /* The screen layout has decorative glass effects that can create huge blank
+     regions or clipping in print. Keep the content, simplify the canvas. */
+  .app,
+  .container,
+  .results,
+  .detailed-report {
+    background: #ffffff !important;
+  }
+
+  .cursor-glow,
+  .navbar,
+  .page-header,
+  .assessment-layout,
+  .results-tools,
+  .report-tools,
+  .footer,
+  .map-card,
+  .site-map,
+  button {
+    display: none !important;
+  }
+
+  .detailed-report {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .report-block {
+    margin: 0 0 8mm !important;
+    padding: 6mm !important;
+    background: #ffffff !important;
+    border: 1px solid #d8e0da !important;
+    border-radius: 4mm !important;
+    box-shadow: none !important;
+  }
+
+  /* Never force a whole multi-card grid onto a new page. Let the grid flow,
+     while individual cards remain intact. */
   .report-grid,
   .resource-chart-grid,
-  .report-two-column {
+  .report-two-column,
+  .assessment-charts {
     break-inside: auto !important;
     page-break-inside: auto !important;
   }
@@ -29,30 +87,140 @@
     page-break-inside: avoid !important;
   }
 
-  /* Keep section headings with the content immediately below them. */
+  /* Keep each heading attached to the material it introduces. */
   .report-block > .section-label,
   .report-block > h3,
   .chart-section-heading,
   .soil-heading,
-  .integrated-heading {
+  .integrated-heading,
+  .report-sub-label {
     break-after: avoid !important;
     page-break-after: avoid !important;
   }
 
-  /* Site parameters must be one finished block rather than a heading stranded
-     at the bottom of one page and its values on the next. */
+  .chart-section-heading,
+  .soil-heading,
+  .integrated-heading {
+    margin-top: 6mm !important;
+    margin-bottom: 3mm !important;
+  }
+
+  .chart-section-heading:first-child {
+    margin-top: 0 !important;
+  }
+
+  /* ---------- RESOURCE BARS ---------- */
+  .resource-chart-card {
+    background: #f7faf8 !important;
+    border: 1px solid #d8e0da !important;
+    box-shadow: none !important;
+  }
+
+  .metric-track {
+    display: block !important;
+    height: 2.2mm !important;
+    overflow: hidden !important;
+    background: #e5ebe7 !important;
+    border-radius: 999px !important;
+  }
+
+  .metric-fill {
+    display: block !important;
+    height: 100% !important;
+    min-width: 1px !important;
+    background: #4d7f61 !important;
+    border-radius: 999px !important;
+    opacity: 1 !important;
+  }
+
+  /* ---------- SOIL RISK GRAPH ---------- */
+  .soil-chart {
+    background: #f7faf8 !important;
+    border: 1px solid #d8e0da !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .soil-track {
+    display: flex !important;
+    position: relative !important;
+    height: 2.6mm !important;
+    overflow: visible !important;
+    background: #e6ebe8 !important;
+    border-radius: 999px !important;
+  }
+
+  .soil-band {
+    display: block !important;
+    height: 100% !important;
+    opacity: 1 !important;
+  }
+
+  .soil-low { background: #b9d2c0 !important; }
+  .soil-moderate { background: #ccd5c9 !important; }
+  .soil-high { background: #ded5bd !important; }
+  .soil-very-high { background: #d6c7c0 !important; }
+
+  .soil-marker {
+    display: block !important;
+    z-index: 3 !important;
+    height: 10mm !important;
+    background: #214a31 !important;
+  }
+
+  .soil-marker span {
+    display: block !important;
+    background: #ffffff !important;
+    border: 1px solid #d5dfd8 !important;
+    color: #355644 !important;
+    box-shadow: none !important;
+  }
+
+  .soil-marker i {
+    display: block !important;
+    background: #214a31 !important;
+    box-shadow: 0 0 0 1.2mm #edf3ef !important;
+  }
+
+  /* ---------- INTEGRATED DECISION GRAPH ---------- */
+  .decision-visual {
+    display: flex !important;
+    align-items: center !important;
+    background: #f7faf8 !important;
+    border: 1px solid #d8e0da !important;
+    box-shadow: none !important;
+  }
+
+  .decision-factor,
+  .decision-result {
+    background: #ffffff !important;
+    border: 1px solid #d8e0da !important;
+    box-shadow: none !important;
+  }
+
+  .decision-connector {
+    display: block !important;
+    background: #c9d5cd !important;
+  }
+
+  .decision-result {
+    background: #eef5f0 !important;
+    border-color: #bfd2c5 !important;
+  }
+
+  /* ---------- SITE PARAMETERS ---------- */
   .site-summary {
     display: block !important;
-    margin-top: 24px !important;
-    padding: 18px 0 !important;
-    border: 1px solid #d8e0da !important;
-    border-radius: 14px !important;
+    margin-top: 0 !important;
+    padding: 5mm 0 !important;
     background: #ffffff !important;
+    border: 1px solid #d8e0da !important;
+    border-radius: 4mm !important;
   }
 
   .site-summary > .section-label {
-    padding: 0 18px !important;
-    margin: 0 0 14px !important;
+    padding: 0 5mm !important;
+    margin: 0 0 4mm !important;
   }
 
   .site-summary-grid {
@@ -60,29 +228,25 @@
     page-break-inside: avoid !important;
   }
 
-  /* Reduce the oversized vertical gaps introduced by the screen layout. */
+  /* Reduce screen-only vertical spacing in the exported document. */
   .assessment-charts {
-    margin-top: 26px !important;
+    margin-top: 0 !important;
   }
 
-  .chart-section-heading,
-  .soil-heading,
-  .integrated-heading {
-    margin-top: 24px !important;
-    margin-bottom: 12px !important;
-  }
-
-  .resource-chart-card,
-  .soil-chart,
-  .decision-visual {
-    box-shadow: none !important;
-  }
-
-  /* Avoid tiny orphaned text fragments at page boundaries. */
+  .chart-footnote,
   .report-factor p,
-  .report-bullets li,
-  .chart-footnote {
+  .report-bullets li {
     orphans: 3;
     widows: 3;
+  }
+
+  /* Prevent a heading from becoming the last line on a page. */
+  h1,
+  h2,
+  h3,
+  h4,
+  .section-label {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
   }
 }
