@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from decision_engine import evaluate_site
+from map_layers import get_worldcover_tile
 
 
 app = FastAPI(
@@ -43,3 +44,11 @@ def evaluate(request: SiteRequest):
     )
 
     return result
+
+@app.get("/map/worldcover")
+def worldcover_map(layer: str = "landcover"):
+    try:
+        return get_worldcover_tile(layer)
+    except ValueError as exc:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail=str(exc))
