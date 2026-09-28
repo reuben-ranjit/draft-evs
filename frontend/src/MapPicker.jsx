@@ -1,37 +1,20 @@
 import { useEffect, useState } from "react";
-import {
-  useMap,
-  useMapEvents,
-  Marker,
-  Popup,
-  Polygon,
-} from "react-leaflet";
+import { useMap, useMapEvents, Marker, Popup, Polygon } from "react-leaflet";
 
 function MapController({ position }) {
   const map = useMap();
 
   useEffect(() => {
-    if (position) {
-      map.flyTo(position, 12);
-    }
+    if (position) map.flyTo(position, 12, { duration: 0.7 });
   }, [position, map]);
 
   return null;
 }
 
-function MapClickHandler({
-  position,
-  setPosition,
-  drawing,
-  points,
-  setPoints,
-}) {
+function MapClickHandler({ position, setPosition, drawing, setPoints }) {
   useMapEvents({
     click(event) {
-      const newPoint = [
-        event.latlng.lat,
-        event.latlng.lng,
-      ];
+      const newPoint = [event.latlng.lat, event.latlng.lng];
 
       if (drawing) {
         setPoints((prev) => [...prev, newPoint]);
@@ -41,9 +24,7 @@ function MapClickHandler({
     },
   });
 
-  if (!position || drawing) {
-    return null;
-  }
+  if (!position || drawing) return null;
 
   return (
     <Marker position={position}>
@@ -59,9 +40,7 @@ function MapClickHandler({
 }
 
 function calculateArea(points) {
-  if (points.length < 3) {
-    return 0;
-  }
+  if (points.length < 3) return 0;
 
   let area = 0;
 
@@ -69,18 +48,9 @@ function calculateArea(points) {
     const p1 = points[i];
     const p2 = points[(i + 1) % points.length];
 
-    const x1 =
-      p1[1] *
-      111.32 *
-      Math.cos((p1[0] * Math.PI) / 180);
-
+    const x1 = p1[1] * 111.32 * Math.cos((p1[0] * Math.PI) / 180);
     const y1 = p1[0] * 110.57;
-
-    const x2 =
-      p2[1] *
-      111.32 *
-      Math.cos((p2[0] * Math.PI) / 180);
-
+    const x2 = p2[1] * 111.32 * Math.cos((p2[0] * Math.PI) / 180);
     const y2 = p2[0] * 110.57;
 
     area += x1 * y2 - x2 * y1;
@@ -93,6 +63,7 @@ export default function MapPicker({
   position,
   setPosition,
   onAreaCalculated,
+  showBoundary = true,
 }) {
   const [drawing, setDrawing] = useState(false);
   const [points, setPoints] = useState([]);
@@ -109,9 +80,7 @@ export default function MapPicker({
     }
 
     const area = calculateArea(points);
-
     onAreaCalculated(area.toFixed(2));
-
     setDrawing(false);
   };
 
@@ -129,42 +98,47 @@ export default function MapPicker({
         position={position}
         setPosition={setPosition}
         drawing={drawing}
-        points={points}
         setPoints={setPoints}
       />
 
-      {points.length >= 2 && (
-        <Polygon positions={points} />
+      {showBoundary && points.length >= 2 && (
+        <Polygon
+          positions={points}
+          pathOptions={{
+            color: "#2f7b4b",
+            weight: 3,
+            opacity: 0.95,
+            fillColor: "#4caa6b",
+            fillOpacity: 0.2,
+          }}
+        />
       )}
 
-      <div
-        style={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-          zIndex: 1000,
-          display: "flex",
-          gap: "8px",
-        }}
-      >
+      <div className="map-draw-controls">
         {!drawing && (
-          <button onClick={startDrawing}>
-            Draw Site
+          <button type="button" onClick={startDrawing}>
+            <span>＋</span> Draw site
           </button>
         )}
 
         {drawing && (
-          <button onClick={finishDrawing}>
-            Finish
+          <button type="button" className="map-draw-primary" onClick={finishDrawing}>
+            <span>✓</span> Finish
           </button>
         )}
 
         {points.length > 0 && (
-          <button onClick={clearBoundary}>
+          <button type="button" onClick={clearBoundary}>
             Clear
           </button>
         )}
       </div>
+
+      {drawing && (
+        <div className="map-drawing-hint">
+          Click points around the site, then press <strong>Finish</strong>.
+        </div>
+      )}
     </>
   );
 }
