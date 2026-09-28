@@ -2224,3 +2224,60 @@ select:focus-visible {
     display: none !important;
   }
 }
+
+
+/* =========================================================
+   EARTH ENGINE WORLD COVER MAP LAYERS
+   ========================================================= */
+
+.map-data-legend {
+  position: absolute;
+  right: 14px;
+  bottom: 15px;
+  z-index: 900;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+  max-width: 330px;
+  padding: 9px 11px;
+  border: 1px solid rgba(255,255,255,0.78);
+  border-radius: 11px;
+  background: rgba(255,255,255,0.84);
+  color: #40594a;
+  font-size: 8px;
+  font-weight: 700;
+  box-shadow: 0 9px 25px rgba(23,62,39,0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.map-data-legend > div {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-swatch {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 9px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.legend-swatch.tree { background: #006400; }
+.legend-swatch.crop { background: #f096ff; }
+.legend-swatch.built { background: #fa0000; }
+.legend-swatch.water { background: #0064c8; }
+.legend-swatch.vegetation { background: #2f8f4e; }
+
+@media (max-width: 720px) {
+  .map-data-legend {
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    justify-content: flex-start;
+    bottom: 12px;
+  }
+}
