@@ -8,6 +8,50 @@ import "./Report.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
+
+function WorldCoverLayer({ layer, visible }) {
+  const [tileUrl, setTileUrl] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!visible) {
+      setTileUrl("");
+      return undefined;
+    }
+
+    const loadLayer = async () => {
+      try {
+        const response = await fetch(
+          `${API_URL}/map/worldcover?layer=${encodeURIComponent(layer)}`
+        );
+        if (!response.ok) throw new Error("WorldCover layer unavailable");
+        const payload = await response.json();
+        if (!cancelled) setTileUrl(payload.tile_url || "");
+      } catch (err) {
+        console.error(`Could not load WorldCover ${layer} layer:`, err);
+        if (!cancelled) setTileUrl("");
+      }
+    };
+
+    loadLayer();
+    return () => {
+      cancelled = true;
+    };
+  }, [layer, visible]);
+
+  if (!visible || !tileUrl) return null;
+
+  return (
+    <TileLayer
+      url={tileUrl}
+      opacity={layer === "landcover" ? 0.62 : 0.72}
+      attribution="© ESA WorldCover project 2021"
+      zIndex={layer === "landcover" ? 250 : 300}
+    />
+  );
+}
+
 function formatNumber(value, digits = 2) {
   if (value === null || value === undefined || value === "") return "—";
   return Number(value).toLocaleString(undefined, {
@@ -27,6 +71,9 @@ function App() {
   const [cursor, setCursor] = useState({ x: -200, y: -200 });
   const [satellite, setSatellite] = useState(false);
   const [showBoundary, setShowBoundary] = useState(true);
+  const [showWorldCover, setShowWorldCover] = useState(false);
+  const [showVegetation, setShowVegetation] = useState(false);
+  const [showWater, setShowWater] = useState(false);
   const resultsRef = useRef(null);
 
   useEffect(() => {
@@ -301,6 +348,35 @@ function App() {
                     <span className="custom-check" />
                     <span>Site boundary</span>
                   </label>
+                  <label className="layer-toggle">
+                    <input
+                      type="checkbox"
+                      checked={showWorldCover}
+                      onChange={(e) => setShowWorldCover(e.target.checked)}
+                    />
+                    <span className="custom-check" />
+                    <span>ESA WorldCover</span>
+                  </label>
+
+                  <label className="layer-toggle">
+                    <input
+                      type="checkbox"
+                      checked={showVegetation}
+                      onChange={(e) => setShowVegetation(e.target.checked)}
+                    />
+                    <span className="custom-check" />
+                    <span>Vegetation filter</span>
+                  </label>
+
+                  <label className="layer-toggle">
+                    <input
+                      type="checkbox"
+                      checked={showWater}
+                      onChange={(e) => setShowWater(e.target.checked)}
+                    />
+                    <span className="custom-check" />
+                    <span>Water filter</span>
+                  </label>
                 </div>
 
                 <div className="map-sidebar-divider" />
@@ -349,6 +425,18 @@ function App() {
                     attribution={mapAttribution}
                     url={mapTileUrl}
                   />
+                  <WorldCoverLayer
+                    layer="landcover"
+                    visible={showWorldCover}
+                  />
+                  <WorldCoverLayer
+                    layer="vegetation"
+                    visible={showVegetation}
+                  />
+                  <WorldCoverLayer
+                    layer="water"
+                    visible={showWater}
+                  />
                   <MapPicker
                     position={mapPosition}
                     setPosition={handleMapPosition}
@@ -356,6 +444,25 @@ function App() {
                     showBoundary={showBoundary}
                   />
                 </MapContainer>
+
+                {(showWorldCover || showVegetation || showWater) && (
+                  <div className="map-data-legend">
+                    {showWorldCover && (
+                      <>
+                        <div><span className="legend-swatch tree" />Tree</div>
+                        <div><span className="legend-swatch crop" />Cropland</div>
+                        <div><span className="legend-swatch built" />Built-up</div>
+                        <div><span className="legend-swatch water" />Water</div>
+                      </>
+                    )}
+                    {showVegetation && (
+                      <div><span className="legend-swatch vegetation" />Vegetation filter</div>
+                    )}
+                    {showWater && (
+                      <div><span className="legend-swatch water" />Permanent water</div>
+                    )}
+                  </div>
+                )}
 
                 <div className="map-overlay-top">
                   <span className="map-live-dot" />
